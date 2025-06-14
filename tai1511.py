@@ -1,4 +1,3 @@
-
 import streamlit as st
 import time
 
@@ -17,7 +16,7 @@ body {
 .cloud {
     position: absolute;
     background: white;
-    border-radius: 50%;
+    border-radius: 100px;
     opacity: 0.8;
     animation: float 20s infinite linear;
 }
@@ -129,6 +128,20 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
+
+.stButton>button {
+    background: #87CEEB;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.stButton>button:hover {
+    background: #4682B4;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -146,24 +159,29 @@ if 'score' not in st.session_state:
     st.session_state.score = 0
 if 'plants' not in st.session_state:
     st.session_state.plants = {1: "Empty", 2: "Empty", 3: "Empty"}
+if 'spirits' not in st.session_state:
+    st.session_state.spirits = {1: "Hungry", 2: "Hungry"}
 
 # Form đăng nhập
 if not st.session_state.logged_in:
-    with st.container():
-        st.markdown("""
-        <div class="login-form">
-            <h2 style="text-align: center; color: #4682B4;">Đăng Nhập Khu Vườn Trên Mây</h2>
-            <input type="text" id="username" placeholder="Tên người chơi">
-            <input type="password" id="password" placeholder="Mật khẩu">
-            <button onclick="login()">Đăng Nhập</button>
-        </div>
-        """, unsafe_allow_html=True)
-        # Giả lập đăng nhập
-        if st.button("Đăng Nhập (Giả lập)"):
+    st.markdown('<div class="login-form">', unsafe_allow_html=True)
+    st.markdown('<h2 style="text-align: center; color: #4682B4;">Đăng Nhập Khu Vườn Trên Mây</h2>', unsafe_allow_html=True)
+    
+    username = st.text_input("Tên người chơi", key="username")
+    password = st.text_input("Mật khẩu", type="password", key="password")
+    
+    if st.button("Đăng Nhập"):
+        if username and password:
             st.session_state.logged_in = True
+            st.session_state.username = username
+            st.success("Đăng nhập thành công!")
             st.rerun()
+        else:
+            st.error("Vui lòng nhập đầy đủ thông tin!")
+    st.markdown('</div>', unsafe_allow_html=True)
 else:
     # Giao diện chính
+    st.markdown(f'<h1 style="text-align: center; color: #4682B4;">Chào mừng {st.session_state.username} đến với Khu Vườn Trên Mây!</h1>', unsafe_allow_html=True)
     st.markdown('<div class="garden-container">', unsafe_allow_html=True)
     
     # Chậu cây
@@ -183,42 +201,54 @@ else:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Quản lý chậu cây")
-        pot_id = st.selectbox("Chọn chậu", [1, 2, 3])
-        action = st.selectbox("Hành động", ["Trồng cây", "Tưới nước", "Thu hoạch"])
-        if st.button("Thực hiện"):
+        pot_id = st.selectbox("Chọn chậu", [1, 2, 3], key="pot_select")
+        action = st.selectbox("Hành động", ["Trồng cây", "Tưới nước", "Thu hoạch"], key="pot_action")
+        if st.button("Thực hiện", key="pot_button"):
             if action == "Trồng cây":
-                st.session_state.plants[pot_id] = "1"
-                st.session_state.score += 5
-                st.success(f"Đã trồng cây ở chậu {pot_id}!")
+                if st.session_state.plants[pot_id] == "Empty":
+                    st.session_state.plants[pot_id] = "Planted"
+                    st.session_state.score += 5
+                    st.success(f"Đã trồng cây ở chậu {pot_id}!")
+                else:
+                    st.warning("Chậu này đã có cây!")
             elif action == "Tưới nước":
                 if st.session_state.plants[pot_id] != "Empty":
+                    st.session_state.plants[pot_id] = "Watered"
                     st.session_state.score += 3
                     st.success(f"Đã tưới nước cho cây ở chậu {pot_id}!")
                 else:
                     st.warning("Chậu này chưa có cây!")
             elif action == "Thu hoạch":
-                if st.session_state.plants[pot_id] != "Empty":
+                if st.session_state.plants[pot_id] in ["Planted", "Watered"]:
                     st.session_state.plants[pot_id] = "Empty"
                     st.session_state.score += 10
                     st.success(f"Đã thu hoạch cây ở chậu {pot_id}!")
                 else:
-                    st.warning("Chậu này chưa có cây!")
+                    st.warning("Chậu này chưa có cây để thu hoạch!")
     
     with col2:
         st.subheader("Tương tác linh thú")
-        spirit_action = st.selectbox("Hành động với linh thú", ["Cho ăn", "Chơi cùng"])
-        if st.button("Tương tác"):
+        spirit_id = st.selectbox("Chọn linh thú", [1, 2], key="spirit_select")
+        spirit_action = st.selectbox("Hành động với linh thú", ["Cho ăn", "Chơi cùng"], key="spirit_action")
+        if st.button("Tương tác", key="spirit_button"):
             if spirit_action == "Cho ăn":
+                st.session_state.spirits[spirit_id] = "Fed"
                 st.session_state.score += 5
-                st.success("Linh thú đã được cho ăn!")
+                st.success(f"Linh thú {spirit_id} đã được cho ăn!")
             elif spirit_action == "Chơi cùng":
+                st.session_state.spirits[spirit_id] = "Happy"
                 st.session_state.score += 7
-                st.success("Đã chơi cùng linh thú!")
+                st.success(f"Đã chơi cùng linh thú {spirit_id}!")
     
-    # Hiển thị trạng thái chậu
-    st.write("Trạng thái chậu cây:", st.session_state.plants)
-
+    # Hiển thị trạng thái
+    st.write("**Trạng thái chậu cây:**", st.session_state.plants)
+    st.write("**Trạng thái linh thú:**", st.session_state.spirits)
+    
     # Nút đăng xuất
-    if st.button("Đăng xuất"):
+    if st.button("Đăng xuất", key="logout"):
         st.session_state.logged_in = False
+        st.session_state.username = None
+        st.session_state.score = 0
+        st.session_state.plants = {1: "Empty", 2: "Empty", 3: "Empty"}
+        st.session_state.spirits = {1: "Hungry", 2: "Hungry"}
         st.rerun()
