@@ -80,7 +80,7 @@ elif choice == "Vào game":
                 st.image("assets/win.gif", width=300)
             else:
                 st.error("💀 Bạn đã thất bại!")
-                st.image("assets/lose.gif", width=300)
+                st.image("lose.gif", width=300)
 
         st.caption("🔥 Mỗi trận đấu là ngẫu nhiên, hãy thử nhiều lần!")
 
