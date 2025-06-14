@@ -37,4 +37,51 @@ if choice == "Đăng ký":
     new_pass = st.text_input("🔒 Mật khẩu", type="password")
     if st.button("Đăng ký"):
         if register(new_user, new_pass):
-            st.success("✅ Đăng ký thành công! Vui lòng đ
+            st.success("✅ Đăng ký thành công! Vui lòng đăng nhập.")
+        else:
+            st.error("❌ Tên người dùng đã tồn tại.")
+
+# -------------------- Đăng nhập --------------------
+elif choice == "Đăng nhập":
+    st.subheader("🔐 Đăng nhập")
+    username = st.text_input("👤 Tên người dùng")
+    password = st.text_input("🔒 Mật khẩu", type="password")
+    if st.button("Đăng nhập"):
+        if login(username, password):
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.success(f"🎉 Chào mừng {username} quay lại!")
+        else:
+            st.error("❌ Sai tên đăng nhập hoặc mật khẩu.")
+
+# -------------------- Vào game --------------------
+elif choice == "Vào game":
+    if not st.session_state.logged_in:
+        st.warning("⚠️ Bạn cần đăng nhập để chơi game.")
+    else:
+        st.subheader(f"🎮 Đấu trường bắt đầu - Chiến đấu thôi, {st.session_state.username}!")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image("assets/lion.gif", caption="🦁 Bạn", width=250)
+        with col2:
+            st.image("assets/tiger.gif", caption="🐯 Đối thủ", width=250)
+
+        attack = st.selectbox("💥 Chọn tuyệt chiêu của bạn:", 
+                              ["Cào xé", "Cắn mạnh", "Chưởng lửa", "Gầm sấm"])
+        
+        if st.button("⚔️ Tấn công"):
+            enemy_attack = choose_attack()
+            st.info(f"🐯 Đối thủ dùng tuyệt chiêu: **{enemy_attack}**")
+            
+            result = random.choice(["win", "lose"])
+            if result == "win":
+                st.success("🎉 Bạn đã chiến thắng trận đấu!")
+                st.image("assets/win.gif", width=300)
+            else:
+                st.error("💀 Bạn đã thất bại!")
+                st.image("assets/lose.gif", width=300)
+
+        st.caption("🔥 Mỗi trận đấu là ngẫu nhiên, hãy thử nhiều lần!")
+
+streamlit run main.py
