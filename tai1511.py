@@ -63,9 +63,9 @@ elif choice == "Vào game":
 
         col1, col2 = st.columns(2)
         with col1:
-            st.image("assets/lion.gif", caption="🦁 Bạn", width=250)
+            st.image("lion.gif", caption="🦁 Bạn", width=250)
         with col2:
-            st.image("assets/tiger.gif", caption="🐯 Đối thủ", width=250)
+            st.image("tiger.gif", caption="🐯 Đối thủ", width=250)
 
         attack = st.selectbox("💥 Chọn tuyệt chiêu của bạn:", 
                               ["Cào xé", "Cắn mạnh", "Chưởng lửa", "Gầm sấm"])
@@ -77,7 +77,7 @@ elif choice == "Vào game":
             result = random.choice(["win", "lose"])
             if result == "win":
                 st.success("🎉 Bạn đã chiến thắng trận đấu!")
-                st.image("assets/win.gif", width=300)
+                st.image("win.gif", width=300)
             else:
                 st.error("💀 Bạn đã thất bại!")
                 st.image("lose.gif", width=300)
