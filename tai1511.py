@@ -84,4 +84,3 @@ elif choice == "Vào game":
 
         st.caption("🔥 Mỗi trận đấu là ngẫu nhiên, hãy thử nhiều lần!")
 
-streamlit run main.py
